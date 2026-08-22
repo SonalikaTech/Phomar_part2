@@ -165,36 +165,40 @@ topBtn.addEventListener("click",()=>{
 // Fade In Animation
 // ===============================
 
-const reveal = document.querySelectorAll("section:not(#home)");
+const reveal=document.querySelectorAll("section");
 
-function revealSections() {
+window.addEventListener("scroll",()=>{
 
-    reveal.forEach(section => {
+    reveal.forEach(section=>{
 
-        const top = section.getBoundingClientRect().top;
-        const windowHeight = window.innerHeight;
+        const top=section.getBoundingClientRect().top;
 
-        if (top < windowHeight - 100) {
+        const windowHeight=window.innerHeight;
 
-            section.style.opacity = "1";
-            section.style.transform = "translateY(0)";
-            section.style.transition = "opacity .8s ease, transform .8s ease";
+        if(top<windowHeight-100){
+
+            section.style.opacity="1";
+
+            section.style.transform="translateY(0px)";
+
+            section.style.transition=".8s";
 
         }
 
     });
 
-}
-
-window.addEventListener("scroll", revealSections);
-window.addEventListener("load", revealSections);
+});
 
 
-// Initial state
-reveal.forEach(section => {
+// ===============================
+// Default Hidden
+// ===============================
 
-    section.style.opacity = "0";
-    section.style.transform = "translateY(60px)";
+reveal.forEach(section=>{
+
+    section.style.opacity="0";
+
+    section.style.transform="translateY(60px)";
 
 });
 
@@ -283,6 +287,8 @@ loader.style.display="none";
 
 }
 
+    // Trigger a scroll event on load so sections in view reveal immediately
+    window.dispatchEvent(new Event('scroll'));
 };
 
 
@@ -294,11 +300,13 @@ console.log("Phomar Systems Website Loaded Successfully");
 
 
 
-document.getElementById("contactBtn").addEventListener("click", function () {
-
-    window.open(
-        "https://forms.gle/XXXXXXXXXXXX",
-        "_blank"
-    );
-
-});
+// Safe attach for optional contact button
+const contactBtn = document.getElementById("contactBtn");
+if (contactBtn) {
+    contactBtn.addEventListener("click", function () {
+        window.open(
+            "https://forms.gle/XXXXXXXXXXXX",
+            "_blank"
+        );
+    });
+}
