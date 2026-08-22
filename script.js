@@ -165,40 +165,36 @@ topBtn.addEventListener("click",()=>{
 // Fade In Animation
 // ===============================
 
-const reveal=document.querySelectorAll("section");
+const reveal = document.querySelectorAll("section:not(#home)");
 
-window.addEventListener("scroll",()=>{
+function revealSections() {
 
-    reveal.forEach(section=>{
+    reveal.forEach(section => {
 
-        const top=section.getBoundingClientRect().top;
+        const top = section.getBoundingClientRect().top;
+        const windowHeight = window.innerHeight;
 
-        const windowHeight=window.innerHeight;
+        if (top < windowHeight - 100) {
 
-        if(top<windowHeight-100){
-
-            section.style.opacity="1";
-
-            section.style.transform="translateY(0px)";
-
-            section.style.transition=".8s";
+            section.style.opacity = "1";
+            section.style.transform = "translateY(0)";
+            section.style.transition = "opacity .8s ease, transform .8s ease";
 
         }
 
     });
 
-});
+}
+
+window.addEventListener("scroll", revealSections);
+window.addEventListener("load", revealSections);
 
 
-// ===============================
-// Default Hidden
-// ===============================
+// Initial state
+reveal.forEach(section => {
 
-reveal.forEach(section=>{
-
-    section.style.opacity="0";
-
-    section.style.transform="translateY(60px)";
+    section.style.opacity = "0";
+    section.style.transform = "translateY(60px)";
 
 });
 
