@@ -4,11 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Inductance Calculator – Turns, AL Value & Inductance | Phomar Systems</title>
+<title>Inductance Calculator | Phomar Systems</title>
 <meta name="description" content="Free online inductance calculator by Phomar Systems. Calculate coil turns, AL value, and inductance using L = AL × N². Supports nH, µH and mH.">
 <meta name="robots" content="index, follow">
 <meta name="author" content="Phomar Systems">
-<meta name="theme-color" content="#06243a">
+<meta name="theme-color" content="#007bff">
 
 <meta property="og:title" content="Inductance Calculator – Phomar Systems">
 <meta property="og:description" content="Calculate inductance, AL value and number of turns for magnetic cores with this free online calculator.">
@@ -36,106 +36,293 @@
 }
 </script>
 
+
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+
 body{
     font-family:Arial,Helvetica,sans-serif;
-    background:#f4f7fa;color:#17212b;
-    min-height:100vh
+    background:#f4f7fb;
+    color:#17212b;
+    min-height:100vh;
 }
+
 .hero{
-    height:125px;padding:15px 20px;
-    display:flex;align-items:center;justify-content:center;
-    text-align:center;position:relative;overflow:hidden;
+    min-height:60px;
+    padding:10px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    position:relative;
+    overflow:hidden;
     background:
-      linear-gradient(rgba(4,24,40,.78),rgba(4,24,40,.82)),
-      radial-gradient(circle at 20% 30%,#087ea4 0,transparent 35%),
-      radial-gradient(circle at 80% 60%,#005c7a 0,transparent 38%),#061a29
+        linear-gradient(135deg,rgba(0,43,92,.96),rgba(0,123,255,.90)),
+        radial-gradient(circle at 20% 30%,#00bfff 0,transparent 35%),
+        #002b5c;
+    box-shadow:0 5px 18px rgba(0,43,92,.20);
 }
+
 .hero:before{
-    content:"";position:absolute;inset:-50%;
-    background:repeating-radial-gradient(ellipse at center,
-      transparent 0 48px,rgba(49,169,210,.13) 49px 50px,
-      transparent 51px 82px);
-    transform:rotate(-10deg)
+    content:"";
+    position:absolute;
+    inset:-50%;
+    background:repeating-radial-gradient(
+        ellipse at center,
+        transparent 0 48px,
+        rgba(255,255,255,.08) 49px 50px,
+        transparent 51px 82px
+    );
+    transform:rotate(-10deg);
 }
+
 .hero h1{
-    position:relative;z-index:1;color:#fff;
+    position:relative;
+    z-index:1;
+    color:#fff;
     font-size:clamp(27px,4vw,38px);
-    letter-spacing:1px;font-weight:700
+    letter-spacing:1px;
+    font-weight:700;
 }
-.container{max-width:1200px;margin:auto;padding:16px 18px 28px}
-.intro{text-align:center;margin-bottom:14px;color:#52606d;font-size:14px}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+    padding:18px 18px 30px;
+}
+
+.intro{
+    text-align:center;
+    margin-bottom:16px;
+    color:#52606d;
+    font-size:14px;
+}
+
 .calculator-grid{
-    display:grid;grid-template-columns:repeat(3,1fr);gap:14px
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
 }
+
 .card{
-    background:#fff;border-radius:11px;padding:16px;
-    box-shadow:0 5px 18px rgba(16,42,67,.09);
-    border:1px solid #e5ebf0;display:flex;flex-direction:column
+    background:#fff;
+    border-radius:12px;
+    padding:18px;
+    box-shadow:0 7px 22px rgba(0,43,92,.09);
+    border:1px solid #e0e8f0;
+    display:flex;
+    flex-direction:column;
 }
-.card-header{display:flex;align-items:center;gap:10px;margin-bottom:13px}
+
+.card-header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:14px;
+}
+
 .badge{
-    width:32px;height:32px;border-radius:50%;
-    background:#00a896;color:#fff;display:grid;place-items:center;
-    font-weight:bold;flex-shrink:0
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    background:#007bff;
+    color:#fff;
+    display:grid;
+    place-items:center;
+    font-weight:bold;
+    flex-shrink:0;
+    box-shadow:0 4px 10px rgba(0,123,255,.22);
 }
-.card h2{font-size:18px;color:#17384d}
-.field{margin-bottom:10px}
+
+.card h2{
+    font-size:18px;
+    color:#002b5c;
+}
+
+.field{
+    margin-bottom:11px;
+}
+
 label{
-    display:block;font-size:13px;font-weight:600;
-    margin-bottom:5px;color:#334e68
+    display:block;
+    font-size:13px;
+    font-weight:600;
+    margin-bottom:5px;
+    color:#334e68;
 }
-.input-row{display:flex;gap:7px}
+
+.input-row{
+    display:flex;
+    gap:7px;
+}
+
 input,select{
-    width:100%;height:38px;border:1px solid #cbd5df;
-    border-radius:6px;background:#fff;padding:0 9px;
-    font-size:14px;outline:none
+    width:100%;
+    height:39px;
+    border:1px solid #cbd5df;
+    border-radius:7px;
+    background:#fff;
+    padding:0 10px;
+    font-size:14px;
+    outline:none;
+    color:#17212b;
 }
+
 input:focus,select:focus{
-    border-color:#00a896;box-shadow:0 0 0 2px rgba(0,168,150,.10)
+    border-color:#007bff;
+    box-shadow:0 0 0 3px rgba(0,123,255,.10);
 }
-.unit{max-width:82px}
+
+.unit{
+    max-width:82px;
+}
+
 button{
-    width:100%;min-height:38px;border:0;border-radius:6px;
-    background:#00a896;color:#fff;font-size:13px;
-    font-weight:700;cursor:pointer;margin-top:2px
+    width:100%;
+    min-height:39px;
+    border:0;
+    border-radius:7px;
+    background:#007bff;
+    color:#fff;
+    font-size:13px;
+    font-weight:700;
+    cursor:pointer;
+    margin-top:2px;
+    transition:.2s ease;
 }
-button:hover{background:#008f80}
+
+button:hover{
+    background:#0056b3;
+}
+
 .result{
-    margin-top:9px;background:#eefaf8;border:1px solid #c9eee8;
-    border-radius:6px;padding:9px;font-weight:700;color:#006b61;
-    min-height:38px;display:flex;align-items:center;font-size:13px
+    margin-top:10px;
+    background:#eef6ff;
+    border:1px solid #cfe4ff;
+    border-left:4px solid #007bff;
+    border-radius:7px;
+    padding:10px;
+    font-weight:700;
+    color:#0056b3;
+    min-height:40px;
+    display:flex;
+    align-items:center;
+    font-size:13px;
 }
-.error{color:#b42318;background:#fff2f0;border-color:#f4c7c2}
-.formula{margin-top:11px}
+
+.error{
+    color:#b42318;
+    background:#fff2f0;
+    border-color:#f4c7c2;
+}
+
+.formula{
+    margin-top:12px;
+}
+
 .formula-title{
-    font-size:11px;font-weight:700;color:#66788a;
-    margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px
+    font-size:11px;
+    font-weight:700;
+    color:#66788a;
+    margin-bottom:5px;
+    text-transform:uppercase;
+    letter-spacing:.5px;
 }
+
 .formula-box{
-    background:#f5f7f9;border-left:3px solid #00a896;
-    border-radius:4px;padding:8px;font-family:"Times New Roman",serif;
-    font-size:17px;text-align:center;color:#17212b
+    background:#f3f7fc;
+    border-left:3px solid #007bff;
+    border-radius:5px;
+    padding:9px;
+    font-family:"Times New Roman",serif;
+    font-size:17px;
+    text-align:center;
+    color:#17212b;
 }
-.formula-note{margin-top:4px;font-size:11px;color:#718096;text-align:center}
+
+.formula-note{
+    margin-top:4px;
+    font-size:11px;
+    color:#718096;
+    text-align:center;
+}
+
 .seo-content{
-    margin-top:14px;background:#fff;border:1px solid #e5ebf0;
-    border-radius:10px;padding:14px 17px
+    margin-top:16px;
+    background:#fff;
+    border:1px solid #e0e8f0;
+    border-radius:11px;
+    padding:15px 18px;
+    box-shadow:0 5px 18px rgba(0,43,92,.06);
 }
-.seo-content h2{font-size:17px;color:#17384d;margin-bottom:6px}
+
+.seo-content h2{
+    font-size:17px;
+    color:#002b5c;
+    margin-bottom:7px;
+}
+
 .seo-content p{
-    font-size:13px;line-height:1.5;color:#52606d;margin-bottom:5px
+    font-size:13px;
+    line-height:1.5;
+    color:#52606d;
+    margin-bottom:5px;
 }
-.seo-content strong{color:#334e68}
-.footer-note{text-align:center;font-size:11px;color:#8795a1;margin-top:10px}
+
+.seo-content strong{
+    color:#334e68;
+}
+
+.footer-note{
+    text-align:center;
+    font-size:11px;
+    color:#8795a1;
+    margin-top:11px;
+}
 
 @media(max-width:900px){
-    .hero{height:105px}
+    .hero{min-height:105px}
     .calculator-grid{grid-template-columns:1fr}
     .card{max-width:650px;width:100%;margin:auto}
 }
+
+@media(max-width:576px){
+    .hero{
+        min-height:100px;
+        padding:16px;
+    }
+
+    .hero h1{
+        font-size:27px;
+    }
+
+    .container{
+        padding:14px 12px 25px;
+    }
+
+    .intro{
+        font-size:13px;
+        line-height:1.5;
+    }
+
+    .card{
+        padding:15px;
+    }
+
+    .card h2{
+        font-size:17px;
+    }
+
+    .input-row{
+        gap:6px;
+    }
+
+    input,select,button{
+        height:40px;
+    }
+}
 </style>
+
 </head>
 
 <body>
