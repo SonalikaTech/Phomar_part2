@@ -491,14 +491,13 @@ button:hover{background:#0056b3}
 
             <div class="formula-capture-row">
                 <div class="formula">
-                    <div class="formula-title">Examples</div>
+                    <div class="formula-title">Formula</div>
                     <div class="formula-box">
-                        103 = 10 kΩ &nbsp; • &nbsp; 472 = 4.7 kΩ
+                        EIA-96 = Base Value × Multiplier
                     </div>
                     <div class="formula-note">
-                        EIA-96: 01A = 100 Ω • 68B = 4.99 kΩ
-                        <br>
-                        R notation: 4R7 = 4.7 Ω • R47 = 0.47 Ω
+                        2-digit code + multiplier letter<br>
+                        D = ×1000 • E = ×10000 • F = ×100000
                     </div>
                 </div>
                 <button type="button" class="capture-btn" onclick="captureSMD(this)">
@@ -517,7 +516,7 @@ button:hover{background:#0056b3}
         </p>
         <p>
             It supports <strong>4-band, 5-band and 6-band resistors</strong>, along with common
-            <strong>3-digit, 4-digit and R-notation SMD codes</strong>.
+            <strong>3-digit, 4-digit, R-notation and EIA-96 SMD codes</strong>.
         </p>
     </section>
 
@@ -708,10 +707,15 @@ function calculateLeaded(){
 
     showResult("resultA",message);
 }
-
 function calculateSMD(){
-    const raw=document.getElementById("smdCode").value.trim().toUpperCase().replace(/\s+/g,"");
-    const type=document.getElementById("smdType").value;
+
+    const raw = document.getElementById("smdCode")
+        .value
+        .trim()
+        .toUpperCase()
+        .replace(/\s+/g,"");
+
+    const type = document.getElementById("smdType").value;
 
     if(!raw){
         showError("resultB","Please enter an SMD resistor code.");
@@ -722,105 +726,197 @@ function calculateSMD(){
 
     /* =========================
        EIA-96
-       Format: 2 digits + multiplier letter
-       Example: 01A = 100 Ω
-                68B = 4.99 kΩ
-                75C = 30.1 kΩ
+
+       Format:
+       2 digit code + multiplier letter
+
+       Examples:
+       01A = 100 Ω
+       01D = 100 kΩ
+       68B = 4.99 kΩ
+       75C = 59 kΩ
        ========================= */
-    if(type==="e96" || (type==="auto" && /^[0-9]{2}[A-Z]$/.test(raw))){
+
+    if(type === "e96" ||
+       (type === "auto" && /^[0-9]{2}[A-Z]$/.test(raw))){
 
         const e96Values = [
-            1.00,1.02,1.05,1.07,1.10,1.13,1.15,1.18,1.21,1.24,
-            1.27,1.30,1.33,1.37,1.40,1.43,1.47,1.50,1.54,1.58,
-            1.62,1.65,1.69,1.74,1.78,1.82,1.87,1.91,1.96,2.00,
-            2.05,2.10,2.15,2.21,2.26,2.32,2.37,2.43,2.49,2.55,
-            2.61,2.67,2.74,2.80,2.87,2.94,3.01,3.09,3.16,3.24,
-            3.32,3.40,3.48,3.57,3.65,3.74,3.83,3.92,4.02,4.12,
-            4.22,4.32,4.42,4.53,4.64,4.75,4.87,4.99,5.11,5.23,
-            5.36,5.49,5.62,5.76,5.90,6.04,6.19,6.34,6.49,6.65,
-            6.81,6.98,7.15,7.32,7.50,7.68,7.87,8.06,8.25,8.45,
-            8.66,8.87,9.09,9.31,9.53,9.76
+            100,102,105,107,110,113,115,118,121,124,
+            127,130,133,137,140,143,147,150,154,158,
+            162,165,169,174,178,182,187,191,196,200,
+            205,210,215,221,226,232,237,243,249,255,
+            261,267,274,280,287,294,301,309,316,324,
+            332,340,348,357,365,374,383,392,402,412,
+            422,432,442,453,464,475,487,499,511,523,
+            536,549,562,576,590,604,619,634,649,665,
+            681,698,715,732,750,768,787,806,825,845,
+            866,887,909,931,953,976
         ];
 
         const e96Multipliers = {
-            "Z":0.001,
-            "Y":0.01,
-            "X":0.1,
-            "A":1,
-            "B":10,
-            "C":100,
-            "D":1000,
-            "E":10000,
-            "F":100000
+            "Z": 0.001,
+            "Y": 0.01,
+            "X": 0.1,
+            "A": 1,
+            "B": 10,
+            "C": 100,
+            "D": 1000,
+            "E": 10000,
+            "F": 100000
         };
 
-        const index=parseInt(raw.slice(0,2),10);
-        const letter=raw.slice(2);
+        const index = parseInt(raw.slice(0,2),10);
+        const letter = raw.slice(2);
 
-        if(index<1 || index>96 || !Object.prototype.hasOwnProperty.call(e96Multipliers,letter)){
-            showError("resultB","Invalid EIA-96 code. Use 01–96 followed by Z, Y, X, A, B, C, D, E or F.");
+        if(
+            index < 1 ||
+            index > 96 ||
+            !Object.prototype.hasOwnProperty.call(e96Multipliers,letter)
+        ){
+            showError(
+                "resultB",
+                "Invalid EIA-96 code. Use 01–96 followed by Z, Y, X, A, B, C, D, E or F."
+            );
             return;
         }
 
-        value=e96Values[index-1]*e96Multipliers[letter];
+        const baseValue = e96Values[index - 1];
+        const multiplier = e96Multipliers[letter];
+
+        value = baseValue * multiplier;
 
         showResult(
             "resultB",
-            "Resistance = "+formatResistance(value)+" • EIA-96 • ±1%"
+            "Resistance = " +
+            formatResistance(value) +
+            " • EIA-96 • ±1%"
         );
+
         return;
     }
 
+    /* =========================
+       R NOTATION
+
+       4R7 = 4.7 Ω
+       R47 = 0.47 Ω
+       4R70 = 4.70 Ω
+       ========================= */
+
     if(raw.includes("R")){
-        if(type==="3" || type==="4"){
-            showError("resultB","R notation requires R / Decimal Code or Auto Detect.");
+
+        if(type === "3" || type === "4"){
+            showError(
+                "resultB",
+                "R notation requires R / Decimal Code or Auto Detect."
+            );
             return;
         }
 
-        const parts=raw.split("R");
-        if(parts.length!==2 || (parts[0]==="" && parts[1]==="")){
+        const parts = raw.split("R");
+
+        if(
+            parts.length !== 2 ||
+            (parts[0] === "" && parts[1] === "")
+        ){
             showError("resultB","Invalid R notation.");
             return;
         }
 
-        const left=parts[0] || "0";
-        const right=parts[1] || "0";
+        const left = parts[0] || "0";
+        const right = parts[1] || "0";
 
-        if(!/^\d+$/.test(left) || !/^\d+$/.test(right)){
+        if(
+            !/^\d+$/.test(left) ||
+            !/^\d+$/.test(right)
+        ){
             showError("resultB","Invalid SMD code.");
             return;
         }
 
-        value=parseFloat(left+"."+right);
+        value = parseFloat(left + "." + right);
+
     }else{
+
+        /* =========================
+           NORMAL NUMERIC SMD CODE
+           ========================= */
+
         if(!/^\d+$/.test(raw)){
             showError("resultB","Invalid SMD code.");
             return;
         }
 
-        if(type==="3" || (type==="auto" && raw.length===3)){
-            if(raw.length!==3){
-                showError("resultB","3-digit code must contain exactly 3 digits.");
+        /* -------- 3 DIGIT -------- */
+
+        if(type === "3" ||
+           (type === "auto" && raw.length === 3)){
+
+            if(raw.length !== 3){
+                showError(
+                    "resultB",
+                    "3-digit code must contain exactly 3 digits."
+                );
                 return;
             }
-            value=parseInt(raw.slice(0,2),10)*Math.pow(10,parseInt(raw[2],10));
-        }else{
-            if(raw.length!==4){
-                showError("resultB","4-digit code must contain exactly 4 digits.");
+
+            const significant = parseInt(
+                raw.slice(0,2),
+                10
+            );
+
+            const multiplier = parseInt(
+                raw.slice(2),
+                10
+            );
+
+            value =
+                significant *
+                Math.pow(10,multiplier);
+
+        }
+
+        /* -------- 4 DIGIT -------- */
+
+        else{
+
+            if(raw.length !== 4){
+                showError(
+                    "resultB",
+                    "4-digit code must contain exactly 4 digits."
+                );
                 return;
             }
-            value=parseInt(raw.slice(0,3),10)*Math.pow(10,parseInt(raw[3],10));
+
+            const significant = parseInt(
+                raw.slice(0,3),
+                10
+            );
+
+            const multiplier = parseInt(
+                raw.slice(3),
+                10
+            );
+
+            value =
+                significant *
+                Math.pow(10,multiplier);
         }
     }
 
     if(!Number.isFinite(value)){
-        showError("resultB","Unable to decode this resistor code.");
+        showError(
+            "resultB",
+            "Unable to decode this resistor code."
+        );
         return;
     }
 
-    showResult("resultB","Resistance = "+formatResistance(value));
+    showResult(
+        "resultB",
+        "Resistance = " + formatResistance(value)
+    );
 }
-
 
 function loadCaptureImage(src){
     return new Promise((resolve,reject)=>{
