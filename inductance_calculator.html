@@ -38,199 +38,7 @@
 }
 </script>
 
-<script>
-function loadCaptureImage(src){
-    return new Promise((resolve,reject)=>{
-        const img=new Image();
-        img.onload=()=>resolve(img);
-        img.onerror=reject;
-        img.src=src;
-    });
-}
 
-function sanitizeFileName(value){
-    return String(value)
-        .trim()
-        .replace(/[<>:"/\\|?*]+/g,"")
-        .replace(/\s+/g,"_")
-        .replace(/[()]/g,"");
-}
-
-async function captureInductance(button,resultId,type){
-
-    const cards={
-        turns:"turnsCard",
-        al:"alCard",
-        inductance:"inductanceCard"
-    };
-
-    const area=document.getElementById(cards[type]);
-    const result=document.getElementById(resultId);
-
-    if(!area || !result){
-        alert("Capture area not found.");
-        return;
-    }
-
-    if(typeof html2canvas==="undefined"){
-        alert("Capture library could not be loaded. Please check your internet connection and try again.");
-        return;
-    }
-
-    const originalText=button.innerHTML;
-    button.disabled=true;
-    button.textContent="Saving...";
-
-    try{
-
-        const contentCanvas=await html2canvas(area,{
-            backgroundColor:"#ffffff",
-            scale:2,
-            useCORS:true,
-            allowTaint:false,
-            logging:false
-        });
-
-        const headerHeight=82;
-        const footerHeight=46;
-
-        const finalCanvas=document.createElement("canvas");
-        finalCanvas.width=contentCanvas.width;
-        finalCanvas.height=headerHeight+contentCanvas.height+footerHeight;
-
-        const ctx=finalCanvas.getContext("2d");
-
-        /* White background */
-        ctx.fillStyle="#ffffff";
-        ctx.fillRect(0,0,finalCanvas.width,finalCanvas.height);
-
-        /* Header */
-        ctx.fillStyle="#007bff";
-        ctx.fillRect(0,headerHeight-2,finalCanvas.width,2);
-
-        /* Logo */
-        try{
-            const logo=await loadCaptureImage("logo1.png");
-
-            const logoSize=48;
-
-            ctx.drawImage(
-                logo,
-                22,
-                (headerHeight-logoSize)/2,
-                logoSize,
-                logoSize
-            );
-
-        }catch(e){
-            console.warn("Logo could not be loaded:",e);
-        }
-
-        /* Title */
-        ctx.fillStyle="#002b5c";
-        ctx.font="700 26px Arial, Helvetica, sans-serif";
-        ctx.textAlign="left";
-        ctx.textBaseline="middle";
-
-        ctx.fillText(
-            "INDUCTANCE CALCULATOR",
-            82,
-            headerHeight/2
-        );
-
-        /* Calculator card */
-        ctx.drawImage(
-            contentCanvas,
-            0,
-            headerHeight
-        );
-
-        /* Footer */
-        const footerY=headerHeight+contentCanvas.height;
-
-        ctx.fillStyle="#f4f7fb";
-        ctx.fillRect(
-            0,
-            footerY,
-            finalCanvas.width,
-            footerHeight
-        );
-
-        ctx.fillStyle="#66788a";
-        ctx.font="12px Arial, Helvetica, sans-serif";
-        ctx.textAlign="center";
-        ctx.textBaseline="middle";
-
-        ctx.fillText(
-            "Phomar Systems",
-            finalCanvas.width/2,
-            footerY+footerHeight/2
-        );
-
-        /* Filename */
-        let value=result.textContent.trim();
-
-        value=value
-            .replace(/^Result will appear here$/i,"")
-            .replace(/\s+/g,"_");
-
-        let fileName;
-
-        if(type==="turns"){
-
-            fileName=value
-                ? "No_of_Turns_"+sanitizeFileName(value)+".png"
-                : "No_of_Turns_Calculate_Value.png";
-
-        }else if(type==="al"){
-
-            fileName=value
-                ? "AL_Value_"+sanitizeFileName(value)+".png"
-                : "AL_Value_Calculate_Value.png";
-
-        }else{
-
-            fileName=value
-                ? "Inductance_"+sanitizeFileName(value)+".png"
-                : "Inductance_Calculate_Value.png";
-        }
-
-        /* Reliable browser download */
-        finalCanvas.toBlob(function(blob){
-
-            if(!blob){
-                throw new Error("Could not create PNG.");
-            }
-
-            const url=URL.createObjectURL(blob);
-            const link=document.createElement("a");
-
-            link.href=url;
-            link.download=fileName;
-
-            document.body.appendChild(link);
-            link.click();
-            link.remove();
-
-            setTimeout(()=>{
-                URL.revokeObjectURL(url);
-            },1000);
-
-        },"image/png");
-
-    }catch(error){
-
-        console.error("Capture error:",error);
-        alert("Unable to capture the result. Please try again.");
-
-    }finally{
-
-        button.disabled=false;
-        button.innerHTML=originalText;
-
-    }
-}
-</script>
 
 
 
@@ -722,6 +530,169 @@ button:hover{
 
     <div class="footer-note">Inductance Calculator by Phomar Systems</div>
 </main>
+
+
+<script>
+function loadCaptureImage(src){
+    return new Promise((resolve,reject)=>{
+        const img=new Image();
+        img.onload=()=>resolve(img);
+        img.onerror=reject;
+        img.src=src;
+    });
+}
+
+function sanitizeFileName(value){
+    return String(value)
+        .trim()
+        .replace(/[<>:"/\\|?*]+/g,"")
+        .replace(/\s+/g,"_")
+        .replace(/[()]/g,"");
+}
+
+async function captureInductance(button,resultId,type){
+    const cards={
+        turns:"turnsCard",
+        al:"alCard",
+        inductance:"inductanceCard"
+    };
+
+    const area=document.getElementById(cards[type]);
+    const result=document.getElementById(resultId);
+
+    if(!area || !result){
+        alert("Capture area not found.");
+        return;
+    }
+
+    if(typeof html2canvas==="undefined"){
+        alert("Capture library could not be loaded. Please check your internet connection and try again.");
+        return;
+    }
+
+    const originalText=button.innerHTML;
+    button.disabled=true;
+    button.textContent="Saving...";
+
+    try{
+        const contentCanvas=await html2canvas(area,{
+            backgroundColor:"#ffffff",
+            scale:2,
+            useCORS:true,
+            allowTaint:false,
+            logging:false
+        });
+
+        const headerHeight=82;
+        const footerHeight=46;
+        const finalCanvas=document.createElement("canvas");
+
+        finalCanvas.width=contentCanvas.width;
+        finalCanvas.height=headerHeight+contentCanvas.height+footerHeight;
+
+        const ctx=finalCanvas.getContext("2d");
+
+        ctx.fillStyle="#ffffff";
+        ctx.fillRect(0,0,finalCanvas.width,finalCanvas.height);
+
+        /* Header */
+        ctx.fillStyle="#007bff";
+        ctx.fillRect(0,headerHeight-2,finalCanvas.width,2);
+
+        try{
+            const logo=await loadCaptureImage("logo1.png");
+            const logoSize=48;
+
+            ctx.drawImage(
+                logo,
+                22,
+                (headerHeight-logoSize)/2,
+                logoSize,
+                logoSize
+            );
+        }catch(e){
+            console.warn("Logo could not be loaded:",e);
+        }
+
+        ctx.fillStyle="#002b5c";
+        ctx.font="700 26px Arial, Helvetica, sans-serif";
+        ctx.textAlign="left";
+        ctx.textBaseline="middle";
+        ctx.fillText(
+            "INDUCTANCE CALCULATOR",
+            82,
+            headerHeight/2
+        );
+
+        /* Calculator card */
+        ctx.drawImage(contentCanvas,0,headerHeight);
+
+        /* Footer */
+        const footerY=headerHeight+contentCanvas.height;
+
+        ctx.fillStyle="#f4f7fb";
+        ctx.fillRect(0,footerY,finalCanvas.width,footerHeight);
+
+        ctx.fillStyle="#66788a";
+        ctx.font="12px Arial, Helvetica, sans-serif";
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+        ctx.fillText(
+            "Phomar Systems",
+            finalCanvas.width/2,
+            footerY+footerHeight/2
+        );
+
+        let value=result.textContent.trim()
+            .replace(/^Result will appear here$/i,"")
+            .replace(/\s+/g,"_");
+
+        let fileName;
+
+        if(type==="turns"){
+            fileName=value
+                ? "No_of_Turns_"+sanitizeFileName(value)+".png"
+                : "No_of_Turns_Calculate_Value.png";
+        }else if(type==="al"){
+            fileName=value
+                ? "AL_Value_"+sanitizeFileName(value)+".png"
+                : "AL_Value_Calculate_Value.png";
+        }else{
+            fileName=value
+                ? "Inductance_"+sanitizeFileName(value)+".png"
+                : "Inductance_Calculate_Value.png";
+        }
+
+        finalCanvas.toBlob(blob=>{
+            if(!blob){
+                alert("Could not create PNG.");
+                return;
+            }
+
+            const url=URL.createObjectURL(blob);
+            const link=document.createElement("a");
+
+            link.href=url;
+            link.download=fileName;
+
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+
+            setTimeout(()=>{
+                URL.revokeObjectURL(url);
+            },1000);
+        },"image/png");
+
+    }catch(error){
+        console.error("Capture error:",error);
+        alert("Unable to capture the result. Please try again.");
+    }finally{
+        button.disabled=false;
+        button.innerHTML=originalText;
+    }
+}
+</script>
 
 <script>
 function toNanoHenry(value,unit){
