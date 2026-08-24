@@ -34,6 +34,131 @@
     "url": "https://phomar.com/"
   }
 }
+async function ensureHtml2Canvas(){
+    if(typeof html2canvas!=="undefined") return;
+    const script=document.createElement("script");
+    script.src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js";
+    document.head.appendChild(script);
+    await new Promise((resolve,reject)=>{
+        script.onload=resolve;
+        script.onerror=reject;
+    });
+}
+
+function loadCaptureImage(src){
+    return new Promise((resolve,reject)=>{
+        const img=new Image();
+        img.onload=()=>resolve(img);
+        img.onerror=reject;
+        img.src=src;
+    });
+}
+
+function sanitizeFileName(value){
+    return String(value)
+        .trim()
+        .replace(/[<>:"/\\|?*]+/g,"")
+        .replace(/\s+/g,"_")
+        .replace(/[()]/g,"");
+}
+
+async function captureInductance(button,resultId,type){
+    const cards={
+        turns:"turnsCard",
+        al:"alCard",
+        inductance:"inductanceCard"
+    };
+
+    const area=document.getElementById(cards[type]);
+    const result=document.getElementById(resultId);
+    if(!area || !result) return;
+
+    const originalText=button.innerHTML;
+    button.disabled=true;
+    button.textContent="Saving...";
+
+    try{
+        await ensureHtml2Canvas();
+
+        const contentCanvas=await html2canvas(area,{
+            backgroundColor:"#ffffff",
+            scale:2,
+            useCORS:true,
+            logging:false
+        });
+
+        const headerHeight=82;
+        const footerHeight=46;
+        const finalCanvas=document.createElement("canvas");
+        finalCanvas.width=contentCanvas.width;
+        finalCanvas.height=headerHeight+contentCanvas.height+footerHeight;
+
+        const ctx=finalCanvas.getContext("2d");
+        ctx.fillStyle="#ffffff";
+        ctx.fillRect(0,0,finalCanvas.width,finalCanvas.height);
+
+        /* Branded header */
+        ctx.fillStyle="#007bff";
+        ctx.fillRect(0,headerHeight-2,finalCanvas.width,2);
+
+        try{
+            const logo=await loadCaptureImage("logo1.png");
+            const size=48;
+            ctx.drawImage(logo,22,(headerHeight-size)/2,size,size);
+        }catch(e){
+            console.warn("Logo could not be loaded for capture:",e);
+        }
+
+        ctx.fillStyle="#002b5c";
+        ctx.font="700 26px Arial, Helvetica, sans-serif";
+        ctx.textBaseline="middle";
+        ctx.fillText("INDUCTANCE CALCULATOR",82,headerHeight/2);
+
+        ctx.drawImage(contentCanvas,0,headerHeight);
+
+        /* Footer */
+        const footerY=headerHeight+contentCanvas.height;
+        ctx.fillStyle="#f4f7fb";
+        ctx.fillRect(0,footerY,finalCanvas.width,footerHeight);
+        ctx.fillStyle="#66788a";
+        ctx.font="12px Arial, Helvetica, sans-serif";
+        ctx.textAlign="center";
+        ctx.textBaseline="middle";
+        ctx.fillText("Phomar Systems",finalCanvas.width/2,footerY+footerHeight/2);
+
+        let value=result.textContent.trim()
+            .replace(/^Result will appear here$/i,"")
+            .replace(/\s+/g,"_");
+
+        let fileName;
+        if(type==="turns"){
+            fileName=value
+                ? "No_of_Turns_"+sanitizeFileName(value)+".png"
+                : "No_of_Turns_Calculate_Value.png";
+        }else if(type==="al"){
+            fileName=value
+                ? "AL_Value_"+sanitizeFileName(value)+".png"
+                : "AL_Value_Calculate_Value.png";
+        }else{
+            fileName=value
+                ? "Inductance_"+sanitizeFileName(value)+".png"
+                : "Inductance_Calculate_Value.png";
+        }
+
+        const link=document.createElement("a");
+        link.download=fileName;
+        link.href=finalCanvas.toDataURL("image/png");
+        link.click();
+
+    }catch(error){
+        alert("Unable to capture the result. Please try again.");
+        console.error(error);
+    }finally{
+        button.disabled=false;
+        button.innerHTML=originalText;
+    }
+}
+
 </script>
 
 
@@ -48,7 +173,7 @@ body{
 }
 
 .hero{
-    min-height:60px;
+    min-height:72px;
     padding:10px 20px;
     display:flex;
     align-items:center;
@@ -56,33 +181,43 @@ body{
     text-align:center;
     position:relative;
     overflow:hidden;
-    background:
-        linear-gradient(135deg,rgba(0,43,92,.96),rgba(0,123,255,.90)),
-        radial-gradient(circle at 20% 30%,#00bfff 0,transparent 35%),
-        #002b5c;
-    box-shadow:0 5px 18px rgba(0,43,92,.20);
+    background:#fff;
+    border-bottom:1px solid #e2e8f0;
+    box-shadow:0 3px 12px rgba(0,43,92,.08);
+}
+
+.tool-header{
+    position:relative;
+    z-index:2;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+}
+
+.tool-logo{
+    width:44px;
+    height:44px;
+    object-fit:contain;
+    flex-shrink:0;
 }
 
 .hero:before{
     content:"";
     position:absolute;
     inset:-50%;
-    background:repeating-radial-gradient(
-        ellipse at center,
-        transparent 0 48px,
-        rgba(255,255,255,.08) 49px 50px,
-        transparent 51px 82px
-    );
+    background:transparent;
     transform:rotate(-10deg);
 }
 
 .hero h1{
     position:relative;
     z-index:1;
-    color:#fff;
-    font-size:clamp(27px,4vw,38px);
-    letter-spacing:1px;
+    color:#002b5c;
+    font-size:clamp(24px,4vw,34px);
+    letter-spacing:.5px;
     font-weight:700;
+    margin:0;
 }
 
 .container{
@@ -247,6 +382,40 @@ button:hover{
     text-align:center;
 }
 
+.formula-capture-row{
+    display:flex;
+    align-items:flex-end;
+    gap:8px;
+    margin-top:12px;
+}
+
+.formula-capture-row .formula{
+    flex:1;
+    min-width:0;
+    margin-top:0;
+}
+
+.capture-btn{
+    width:auto;
+    min-width:82px;
+    min-height:32px;
+    padding:0 9px;
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+    font-size:10px;
+    border-radius:6px;
+    flex-shrink:0;
+}
+
+.capture-btn:hover{background:#0056b3}
+
+.capture-btn:disabled{
+    opacity:.65;
+    cursor:wait;
+}
+
 .seo-content{
     margin-top:16px;
     background:#fff;
@@ -281,19 +450,25 @@ button:hover{
 }
 
 @media(max-width:900px){
-    .hero{min-height:105px}
+    .hero{min-height:68px}
+    .tool-logo{width:40px;height:40px}
+    .tool-header{gap:9px}
     .calculator-grid{grid-template-columns:1fr}
     .card{max-width:650px;width:100%;margin:auto}
 }
 
 @media(max-width:576px){
     .hero{
-        min-height:100px;
-        padding:16px;
+        min-height:64px;
+        padding:8px 10px;
     }
 
+    .tool-logo{width:34px;height:34px}
+    .tool-header{gap:7px}
+
     .hero h1{
-        font-size:27px;
+        font-size:21px;
+        color:#002b5c;
     }
 
     .container{
@@ -320,6 +495,13 @@ button:hover{
     input,select,button{
         height:40px;
     }
+
+    .formula-capture-row{gap:6px}
+    .capture-btn{
+        min-width:72px;
+        padding:0 7px;
+        font-size:9px;
+    }
 }
 </style>
 
@@ -328,7 +510,10 @@ button:hover{
 <body>
 
 <header class="hero">
-    <h1>INDUCTANCE CALCULATOR</h1>
+    <div class="tool-header">
+        <img src="logo1.png" alt="Phomar Systems Logo" class="tool-logo">
+        <h1>INDUCTANCE CALCULATOR</h1>
+    </div>
 </header>
 
 <main class="container">
@@ -338,7 +523,7 @@ button:hover{
 
     <section class="calculator-grid">
 
-        <article class="card">
+        <article class="card" id="turnsCard">
             <div class="card-header">
                 <div class="badge">A</div>
                 <h2>Calculate No. of Turns</h2>
@@ -364,14 +549,17 @@ button:hover{
             <button onclick="calculateTurns()">Calculate No. of Turns</button>
             <div id="resultA" class="result">Result will appear here</div>
 
-            <div class="formula">
-                <div class="formula-title">Formula</div>
-                <div class="formula-box">N = √(L / A<sub>L</sub>)</div>
-                <div class="formula-note">L and A<sub>L</sub> must use the same unit basis.</div>
+            <div class="formula-capture-row">
+                <div class="formula">
+                    <div class="formula-title">Formula</div>
+                    <div class="formula-box">N = √(L / A<sub>L</sub>)</div>
+                    <div class="formula-note">L and A<sub>L</sub> must use the same unit basis.</div>
+                </div>
+                <button type="button" class="capture-btn" onclick="captureInductance(this,'resultA','turns')">📷 Capture</button>
             </div>
         </article>
 
-        <article class="card">
+        <article class="card" id="alCard">
             <div class="card-header">
                 <div class="badge">B</div>
                 <h2>Calculate AL Value</h2>
@@ -397,14 +585,17 @@ button:hover{
             <button onclick="calculateAL()">Calculate AL Value</button>
             <div id="resultB" class="result">Result will appear here</div>
 
-            <div class="formula">
-                <div class="formula-title">Formula</div>
-                <div class="formula-box">A<sub>L</sub> = L / N²</div>
-                <div class="formula-note">Result is expressed in nH / turn².</div>
+            <div class="formula-capture-row">
+                <div class="formula">
+                    <div class="formula-title">Formula</div>
+                    <div class="formula-box">A<sub>L</sub> = L / N²</div>
+                    <div class="formula-note">Result is expressed in nH / turn².</div>
+                </div>
+                <button type="button" class="capture-btn" onclick="captureInductance(this,'resultB','al')">📷 Capture</button>
             </div>
         </article>
 
-        <article class="card">
+        <article class="card" id="inductanceCard">
             <div class="card-header">
                 <div class="badge">C</div>
                 <h2>Calculate Inductance</h2>
@@ -432,10 +623,13 @@ button:hover{
             <button onclick="calculateInductance()">Calculate Inductance</button>
             <div id="resultC" class="result">Result will appear here</div>
 
-            <div class="formula">
-                <div class="formula-title">Formula</div>
-                <div class="formula-box">L = A<sub>L</sub> × N²</div>
-                <div class="formula-note">A<sub>L</sub> is in nH / turn².</div>
+            <div class="formula-capture-row">
+                <div class="formula">
+                    <div class="formula-title">Formula</div>
+                    <div class="formula-box">L = A<sub>L</sub> × N²</div>
+                    <div class="formula-note">A<sub>L</sub> is in nH / turn².</div>
+                </div>
+                <button type="button" class="capture-btn" onclick="captureInductance(this,'resultC','inductance')">📷 Capture</button>
             </div>
         </article>
 
