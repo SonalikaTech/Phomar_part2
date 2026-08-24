@@ -1058,62 +1058,189 @@ font-size:28px;
 }
 
 /* =========================================
-   MOBILE TOOLS DROPDOWN FIX
+   FINAL MOBILE NAVBAR FIX
    ========================================= */
 
-@media (max-width: 768px){
+@media (max-width: 768px) {
 
-    /* Tools item full width */
-    .navbar-nav .dropdown{
-        width:100%;
-        text-align:center;
-        margin:0 !important;
+    /* Navbar */
+    .navbar {
+        padding: 8px 0 !important;
     }
 
-    /* Tools button same style as other menu items */
-    .navbar-nav .dropdown > .dropdown-toggle{
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        width:100%;
-        padding:9px 0 !important;
-        margin:0 !important;
-
-        color:#000 !important;
-        font-weight:700;
-        font-size:16px;
-        text-align:center;
-        background:transparent;
-        border:0;
+    .navbar > .container {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 12px !important;
+        margin: 0 !important;
     }
 
-    /* Tool icon */
-    .navbar-nav .dropdown > .dropdown-toggle i{
-        margin-right:7px !important;
+    /* Logo area */
+    .navbar-brand {
+        display: flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
     }
 
-    /* Dropdown arrow */
-    .navbar-nav .dropdown > .dropdown-toggle::after{
-        margin-left:8px;
+    .logo-img {
+        width: 48px !important;
+        height: 48px !important;
+        flex-shrink: 0 !important;
     }
 
-    /* Tools dropdown menu */
-    .navbar-nav .dropdown-menu{
-        position:static !important;
-        float:none;
-        width:220px;
-        margin:0 auto !important;
-
-        text-align:center;
-        border:1px solid #e5e5e5;
-        border-radius:10px;
-        box-shadow:0 5px 15px rgba(0,0,0,.12);
+    .brand-name {
+        display: flex !important;
+        align-items: center !important;
+        gap: 4px !important;
+        white-space: nowrap !important;
     }
 
-    .navbar-nav .dropdown-menu .dropdown-item{
-        padding:10px 15px;
-        text-align:center;
-        font-size:15px;
+    .brand-phomar {
+        font-size: 18px !important;
+        letter-spacing: 2px !important;
+    }
+
+    .brand-system {
+        font-size: 17px !important;
+        letter-spacing: 2px !important;
+    }
+
+    /* Hamburger */
+    .navbar-toggler {
+        display: block !important;
+        margin-left: 8px !important;
+        flex-shrink: 0 !important;
+    }
+
+    /* Mobile menu */
+    .navbar-collapse {
+        width: 100% !important;
+        margin-top: 8px !important;
+        padding-top: 8px !important;
+        border-top: 1px solid #e5e5e5 !important;
+    }
+
+    .navbar-collapse .navbar-nav {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    /* Every menu item */
+    .navbar-collapse .navbar-nav > .nav-item {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: center !important;
+    }
+
+    .navbar-collapse .navbar-nav > .nav-item > .nav-link {
+        display: block !important;
+        width: 100% !important;
+        padding: 9px 0 !important;
+        margin: 0 !important;
+        text-align: center !important;
+        color: #000 !important;
+        font-weight: 700 !important;
+    }
+
+    /* =====================================
+       TOOLS
+       ===================================== */
+
+    .navbar-collapse .navbar-nav > .dropdown {
+        width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        text-align: center !important;
+    }
+
+    .navbar-collapse .navbar-nav > .dropdown > .dropdown-toggle {
+        display: flex !important;
+        width: 100% !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        padding: 9px 0 !important;
+        margin: 0 !important;
+
+        color: #000 !important;
+        background: transparent !important;
+        border: 0 !important;
+
+        font-family: inherit !important;
+        font-size: 16px !important;
+        font-weight: 700 !important;
+
+        text-align: center !important;
+    }
+
+    .navbar-collapse .navbar-nav > .dropdown > .dropdown-toggle i {
+        margin-right: 7px !important;
+    }
+
+    .navbar-collapse .navbar-nav > .dropdown > .dropdown-toggle::after {
+        margin-left: 8px !important;
+    }
+
+    /* Tools dropdown */
+    .navbar-collapse .navbar-nav > .dropdown > .dropdown-menu {
+        position: static !important;
+        float: none !important;
+
+        width: 230px !important;
+        margin: 0 auto 8px auto !important;
+        padding: 5px 0 !important;
+
+        text-align: center !important;
+        background: #fff !important;
+
+        border: 1px solid #ddd !important;
+        border-radius: 10px !important;
+        box-shadow: 0 5px 15px rgba(0,0,0,.12) !important;
+    }
+
+    .navbar-collapse .navbar-nav > .dropdown > .dropdown-menu .dropdown-item {
+        display: block !important;
+        width: 100% !important;
+
+        padding: 10px 12px !important;
+
+        text-align: center !important;
+        color: #000 !important;
+        font-weight: 500 !important;
+    }
+
+    /* Hero must start below fixed navbar */
+    .hero {
+        padding-top: 95px !important;
+    }
+}
+
+
+/* Small phones */
+@media (max-width: 390px) {
+
+    .logo-img {
+        width: 42px !important;
+        height: 42px !important;
+    }
+
+    .brand-phomar {
+        font-size: 16px !important;
+        letter-spacing: 1.5px !important;
+    }
+
+    .brand-system {
+        font-size: 15px !important;
+        letter-spacing: 1.5px !important;
     }
 
 }
