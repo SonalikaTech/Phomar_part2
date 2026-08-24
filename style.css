@@ -1056,3 +1056,64 @@ font-size:28px;
     }
 
 }
+
+/* =========================================
+   MOBILE TOOLS DROPDOWN FIX
+   ========================================= */
+
+@media (max-width: 768px){
+
+    /* Tools item full width */
+    .navbar-nav .dropdown{
+        width:100%;
+        text-align:center;
+        margin:0 !important;
+    }
+
+    /* Tools button same style as other menu items */
+    .navbar-nav .dropdown > .dropdown-toggle{
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        width:100%;
+        padding:9px 0 !important;
+        margin:0 !important;
+
+        color:#000 !important;
+        font-weight:700;
+        font-size:16px;
+        text-align:center;
+        background:transparent;
+        border:0;
+    }
+
+    /* Tool icon */
+    .navbar-nav .dropdown > .dropdown-toggle i{
+        margin-right:7px !important;
+    }
+
+    /* Dropdown arrow */
+    .navbar-nav .dropdown > .dropdown-toggle::after{
+        margin-left:8px;
+    }
+
+    /* Tools dropdown menu */
+    .navbar-nav .dropdown-menu{
+        position:static !important;
+        float:none;
+        width:220px;
+        margin:0 auto !important;
+
+        text-align:center;
+        border:1px solid #e5e5e5;
+        border-radius:10px;
+        box-shadow:0 5px 15px rgba(0,0,0,.12);
+    }
+
+    .navbar-nav .dropdown-menu .dropdown-item{
+        padding:10px 15px;
+        text-align:center;
+        font-size:15px;
+    }
+
+}
