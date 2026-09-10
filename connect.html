@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Connect With Phomar</title>
+
+  <title>Connect With Phomar Systems</title>
 
   <style>
     *{
@@ -23,6 +24,7 @@
     }
 
     .form-box{
+      position:relative;
       width:100%;
       max-width:550px;
       background:#fff;
@@ -31,16 +33,57 @@
       box-shadow:0 15px 35px rgba(0,0,0,.25);
     }
 
+    /* Close Button */
+    .close-btn{
+      position:absolute;
+      top:15px;
+      right:18px;
+
+      width:36px;
+      height:36px;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      background:#f1f5f9;
+      color:#334155;
+
+      border:none;
+      border-radius:50%;
+
+      font-size:22px;
+      line-height:1;
+
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    .close-btn:hover{
+      background:#e2e8f0;
+      color:#dc2626;
+      transform:rotate(90deg);
+    }
+
     h2{
       text-align:center;
       color:#0f172a;
       margin-bottom:10px;
+      padding-right:25px;
     }
 
     .subtitle{
       text-align:center;
       color:#666;
+      margin-bottom:10px;
+    }
+
+    .contact-email{
+      text-align:center;
       margin-bottom:25px;
+      font-size:14px;
+      color:#2563eb;
+      font-weight:600;
     }
 
     .input-group{
@@ -54,7 +97,8 @@
       color:#333;
     }
 
-    input, textarea{
+    input,
+    textarea{
       width:100%;
       padding:14px;
       border:1px solid #ccc;
@@ -63,7 +107,8 @@
       font-size:15px;
     }
 
-    input:focus, textarea:focus{
+    input:focus,
+    textarea:focus{
       border-color:#2563eb;
       box-shadow:0 0 0 3px rgba(37,99,235,.15);
     }
@@ -73,20 +118,24 @@
       height:120px;
     }
 
-    button{
+    .send-btn{
       width:100%;
       padding:15px;
+
       background:#2563eb;
       color:#fff;
+
       border:none;
       border-radius:8px;
+
       font-size:16px;
       font-weight:bold;
+
       cursor:pointer;
       transition:.3s;
     }
 
-    button:hover{
+    .send-btn:hover{
       background:#1d4ed8;
     }
 
@@ -95,38 +144,82 @@
       text-align:center;
       font-weight:bold;
     }
+
+    @media(max-width:600px){
+      .form-box{
+        padding:28px 20px;
+      }
+
+      h2{
+        font-size:24px;
+      }
+    }
   </style>
 </head>
+
 <body>
 
 <div class="form-box">
 
+  <!-- Close Button -->
+  <button
+    type="button"
+    class="close-btn"
+    onclick="window.location.href='index.html'"
+    aria-label="Close">
+    &times;
+  </button>
+
   <h2>Connect With Phomar</h2>
-  <p class="subtitle">Fill your details and we'll contact you soon.</p>
+
+  <p class="subtitle">
+    Fill your details and we'll contact you soon.
+  </p>
+
+  <p class="contact-email">
+    phomarinfo@gmail.com
+  </p>
 
   <form id="contactForm">
 
     <div class="input-group">
       <label>Full Name</label>
-      <input type="text" name="from_name" placeholder="Enter your name" required>
+      <input
+        type="text"
+        name="from_name"
+        placeholder="Enter your name"
+        required>
     </div>
 
     <div class="input-group">
       <label>Email</label>
-      <input type="email" name="from_email" placeholder="Enter your email" required>
+      <input
+        type="email"
+        name="from_email"
+        placeholder="Enter your email"
+        required>
     </div>
 
     <div class="input-group">
       <label>Phone Number</label>
-      <input type="tel" name="phone" placeholder="Enter your phone number" required>
+      <input
+        type="tel"
+        name="phone"
+        placeholder="Enter your phone number"
+        required>
     </div>
 
     <div class="input-group">
       <label>Message</label>
-      <textarea name="message" placeholder="Write your message..." required></textarea>
+      <textarea
+        name="message"
+        placeholder="Write your message..."
+        required></textarea>
     </div>
 
-    <button type="submit">Send</button>
+    <button type="submit" class="send-btn">
+      Send Message
+    </button>
 
     <p id="result"></p>
 
@@ -134,19 +227,28 @@
 
 </div>
 
+
 <!-- EmailJS -->
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 
 <script>
-emailjs.init({ publicKey: "6xIMLcJyjuK8KxklS" });
+
+emailjs.init({
+  publicKey: "6xIMLcJyjuK8KxklS"
+});
 
 const form = document.getElementById("contactForm");
 const result = document.getElementById("result");
 
 form.addEventListener("submit", async (e) => {
+
   e.preventDefault();
 
+  result.innerHTML = "Sending...";
+  result.style.color = "#2563eb";
+
   try {
+
     await emailjs.sendForm(
       "service_jzj9hnm",
       "template_7pb7hsq",
@@ -155,17 +257,22 @@ form.addEventListener("submit", async (e) => {
 
     result.innerHTML = "✅ Message sent successfully!";
     result.style.color = "green";
+
     form.reset();
 
   } catch (err) {
+
     console.log(err);
-    result.innerHTML = "❌ " + (err.text || JSON.stringify(err));
+
+    result.innerHTML =
+      "❌ " + (err.text || "Failed to send message.");
+
     result.style.color = "red";
   }
+
 });
+
 </script>
-
-
 
 </body>
 </html>
